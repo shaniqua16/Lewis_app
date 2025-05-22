@@ -1,0 +1,79 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model User {
+  id            String    @id @default(uuid())
+  firstname     String    @db.VarChar(50)
+  lastname      String    @db.VarChar(50)
+  email         String    @unique @db.VarChar(75)
+  password      String
+  street        String?   @db.VarChar(50)
+  city          String?   @db.VarChar(50)
+  state         String?   @db.VarChar(2)
+  postalCode    Int?
+  activated     Boolean?
+  deactivatedOn DateTime?
+  review        Review[]
+  service       Service[]
+  media         Media[]
+}
+
+model Service {
+  id          String   @id @default(uuid())
+  name        String   @db.VarChar(50)
+  description String   @db.VarChar(200)
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  review      Review[]
+  media       Media[]
+}
+
+model Review {
+  id        String   @id @default(uuid())
+  title     String   @db.VarChar(50)
+  text      String   @db.VarChar(200)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  serviceId String
+  service   Service  @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+  rating    Int
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  media     Media[]
+}
+
+model Media {
+  id         String    @id @default(uuid())
+  url        String
+  type       MediaType
+  filename   String?
+  mimeType   String?   @db.VarChar(130)
+  size       Int?
+  altText    String?   @db.VarChar(200)
+  uploadedAt DateTime  @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId String?
+  service   Service? @relation(fields: [serviceId], references: [id])
+  review    Review?  @relation(fields: [reviewId], references: [id])
+  reviewId  String?
+}
