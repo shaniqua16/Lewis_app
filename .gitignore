@@ -1,3 +1,9 @@
+package-lock.json
+
+# prisma
+generated
+
+# node
 node_modules
 # Keep environment variables out of version control
 .env
