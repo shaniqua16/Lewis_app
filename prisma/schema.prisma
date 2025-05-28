@@ -34,6 +34,7 @@ model User {
   review        Review[]
   service       Service[]
   media         Media[]
+  request       Request[]
 }
 
 model Service {
@@ -44,6 +45,7 @@ model Service {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   review      Review[]
   media       Media[]
+  request     Request[]
 }
 
 model Review {
@@ -77,3 +79,12 @@ model Media {
   review    Review?  @relation(fields: [reviewId], references: [id])
   reviewId  String?
 }
+
+model Request {
+  id String @id @default(uuid())
+  userId String
+  user   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  serviceId String
+  service   Service? @relation(fields: [serviceId], references: [id])
+}
+
